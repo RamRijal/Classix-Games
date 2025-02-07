@@ -3,7 +3,7 @@ import { Analytics, BarChart, Bento, ChevronLeft, ChevronRight, Dashboard, Flaky
 import { Box, Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Switch, Typography } from '@mui/material';
 import Link from 'next/link';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { SidebarItem, SidebarProps } from '../types/Sidebar';
 
 export const defaultItems: SidebarItem[] = [
@@ -25,17 +25,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
     toggleTheme,
     isdarkMode
 }) => {
-    const [isExpanded, setIsExpanded] = useState(expanded);
     const [activeItemId, setActiveItemId] = useState<number | null>(null);
 
-    useEffect(() => {
-        setIsExpanded(expanded);    // Sync with parent's expanded state in case expanded changes
-    }, [expanded]);
 
-    const handleToggle = () => {
-        const newState = !isExpanded;
-        setIsExpanded(newState);
-        onToggle?.(newState);
+    const handleExpansion = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onToggle?.(!expanded);
     };
 
     const handleItemClick = (item: SidebarItem) => {
@@ -47,39 +42,38 @@ export const Sidebar: React.FC<SidebarProps> = ({
         e.stopPropagation();
         toggleTheme();
     };
-    
+
 
     return (
         <Drawer
             variant="permanent"
             anchor="left"
             sx={{
-                width: isExpanded ? 260 : 80,
-                transition: 'width 300ms ease-in-out',
-                flexShrink: 0,
+                minWidth: expanded ? 260 : 80,
+                transition: 'width 400ms ease-in-out',
                 '& .MuiDrawer-paper': {
-                    width: isExpanded ? 260 : 80,
+                    minWidth: expanded ? 260 : 80,
                     boxSizing: 'border-box',
                     bgcolor: 'background.paper',
                     borderRight: '1px solid',
                     borderColor: 'divider',
-                    transition: 'width 300ms ease-in-out',
+                    transition: 'width 400ms ease-in-out',
                 }
             }}
         >
             <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', paddingY: 6 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 800, fontSize: 20, display: isExpanded ? 'block' : 'none' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 800, fontSize: 20, display: expanded ? 'block' : 'none' }}>
                         Classix Games
                     </Typography>
                     <IconButton
-                        onClick={handleToggle}
+                        onClick={handleExpansion}
                         size="small"
                         sx={{
-                            ml: isExpanded ? 0 : 'auto',
-                            mr: isExpanded ? 0 : 'auto'
+                            ml: expanded ? 0 : 'auto',
+                            mr: expanded ? 0 : 'auto'
                         }}>
-                        {isExpanded ? <ChevronLeft /> : <ChevronRight />}
+                        {expanded ? <ChevronLeft /> : <ChevronRight />}
                     </IconButton>
                 </Box>
                 <List sx={{ flexGrow: 1, mt: 2, px: 1 }}>
@@ -103,23 +97,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                     },
                                     '& .MuiListItemIcon-root': {
                                         color: 'text.primary',
-                                        minWidth: isExpanded ? 40 : 48,
-                                        mr: isExpanded ? 2 : 0,
+                                        minWidth: expanded ? 40 : 48,
+                                        mr: expanded ? 2 : 0,
                                     },
                                     '& .MuiListItemText-root': {
-                                        display: isExpanded ? 'block' : 'none',
+                                        display: expanded ? 'block' : 'none',
                                     }
                                 }}
                             >
                                 <ListItemIcon sx={{
-                                    minWidth: isExpanded ? 40 : 48,
-                                    mr: isExpanded ? 2 : 0,
+                                    minWidth: expanded ? 40 : 48,
+                                    mr: expanded ? 2 : 0,
                                     color: 'inherit'
                                 }}
                                 >
                                     {item.icon}
                                 </ListItemIcon>
-                                {isExpanded && (
+                                {expanded && (
                                     <ListItemText
                                         primary={item.text}
                                         sx={{
@@ -147,7 +141,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     borderColor: 'divider',
                     flexDirection: 'column',
                 }}>
-                {isExpanded && (
+                {expanded && (
                     <Typography
                         variant='h6'
                         sx={{
@@ -163,8 +157,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     checked={isdarkMode}
                     onChange={handleThemeToggle}
                     size="medium"
-                    onClick={(e) => e.stopPropagation()}  // Additional protection
-
                 />
             </Box>
         </Drawer >

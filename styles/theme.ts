@@ -22,6 +22,18 @@ export const lightThemeOptions: ThemeOptions = {
       primary: "#000000",
       secondary: "#757575",
     },
+    success: {
+      main: "#00C851",
+      dark: "#007E33",
+    },
+    warning: {
+      main: "#ffbb33",
+      dark: "#ff8800",
+    },
+    error: {
+      main: "#ff4444",
+      dark: "#CC0000",
+    },
   },
   components: {
     MuiDrawer: {
@@ -159,7 +171,7 @@ export const darkThemeOptions: ThemeOptions = {
     MuiDrawer: {
       styleOverrides: {
         paper: {
-          width: 240,
+          width: 260,
           backgroundColor: "#f5f5f5",
           transition: "width 300ms ease-in-out",
         },
@@ -267,4 +279,3 @@ export const darkThemeOptions: ThemeOptions = {
 
 export const lightTheme = createTheme(lightThemeOptions);
 export const darkTheme = createTheme(darkThemeOptions);
-
