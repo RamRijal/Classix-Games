@@ -1,10 +1,8 @@
 import { KeyboardProps, KeyProps } from "@/types/wordle"
-import { Box } from "@mui/material"
+import { Box, useTheme } from "@mui/material"
 
 export const Keyboard = ({ onChar, onDelete, onEnter, guesses, evaluatedGuesses, isChecking, }: KeyboardProps) => {
 
-    // const LightTheme=useTheme()
-    // const DarkTheme=useTheme()
     const charStatuses = getCharStatuses(guesses, evaluatedGuesses)
 
     return (
@@ -16,18 +14,19 @@ export const Keyboard = ({ onChar, onDelete, onEnter, guesses, evaluatedGuesses,
             }}>
             {['qwertyuiop', 'asdfghjkl', 'zxcvbnm'].map((row, i) => (
                 <Box key={i} sx={{ display: "flex", justifyContent: "center", mb: 1, width: '100%' }}>
+
+                    {/* KEY FOR EACH ALPHABETS */}
+                    {row.split("").map((key) => (
+                        <Key key={key} value={key} onClick={() => onChar(key)} status={charStatuses[key]} />
+                    ))
+                    }
                     {/* ENTER BUTTON */}
-                    {i === 2 &&
+                    {i === 1 &&
                         (
-                            <Key width={65.4} value="ENTER" onClick={onEnter} isChecking={isChecking} >
+                            <Key width={67} value="ENTER" onClick={onEnter} isChecking={isChecking} >
                                 {isChecking ? "..." : "ENTER"}
                             </Key>
                         )
-                    }
-                    {/* KEY FOR EACH ALPHABETS */}
-                    {row.split("").map((key) => (
-                        <Key key={key} value={key} onClick={() => onChar(key)} status={charStatuses[key]}  />
-                    ))
                     }
                     {/* DELETE BUTTON */}
                     {i === 2 && (
@@ -42,9 +41,11 @@ export const Keyboard = ({ onChar, onDelete, onEnter, guesses, evaluatedGuesses,
 }
 // CUSTOM KEY COMPONENT FOR ALPHABETS
 // CUSTOM CHARACTER/ALPHABET STATUS COMPONENT FOR ALPHABETS
-const Key = ({ value, onClick, width = 40, status, children, isChecking = false, }: KeyProps) => {
+const Key = ({ value, onClick, width = 60, status, children, isChecking = false, }: KeyProps) => {
+    const theme = useTheme()
+
     let backgroundColor = "bg-neutral-300"
-    let textColor = "text-neutral-800"
+    let textColor = theme.palette.background.paper
 
     if (status === "correct") {
         backgroundColor = "bg-green-500"
@@ -69,7 +70,7 @@ const Key = ({ value, onClick, width = 40, status, children, isChecking = false,
     )
 }
 
-const getCharStatuses=(guesses: string[], evaluatedGuesses: string[][])=> {
+const getCharStatuses = (guesses: string[], evaluatedGuesses: string[][]) => {
     const charObj: { [key: string]: string } = {}
 
     guesses.forEach((word, guessIndex) => {

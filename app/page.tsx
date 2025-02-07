@@ -9,7 +9,7 @@ export default function Home() {
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: "white",
+      backgroundColor: "gray",
       flexGrow: 1,
       padding: 3
     }}>

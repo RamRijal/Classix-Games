@@ -31,7 +31,7 @@ export default function WordGrid({ guesses, currentGuess, evaluatedGuesses }: Wo
     )
 }
 
-function Row({ guess, evaluation, theme }: { guess: string; evaluation?: string[]; theme: any }) {
+const Row = ({ guess, evaluation, theme }: { guess: string; evaluation?: string[]; theme: any }) => {
     const tiles = Array.from({ length: WORD_LENGTH })
 
     return (
@@ -43,9 +43,9 @@ function Row({ guess, evaluation, theme }: { guess: string; evaluation?: string[
     )
 }
 
-function Tile({ value, status, theme }: { value?: string; status?: string; theme: any }) {
+const Tile = ({ value, status, theme }: { value?: string; status?: string; theme: any }) => {
     let backgroundColor = theme.palette.grey[300]
-    let color = theme.palette.text.primary
+    let color = theme.palette.text.secondary
 
     if (status === "correct") {
         backgroundColor = theme.palette.success.main
@@ -54,7 +54,7 @@ function Tile({ value, status, theme }: { value?: string; status?: string; theme
         backgroundColor = theme.palette.warning.main
         color = theme.palette.warning.contrastText
     } else if (status === "absent") {
-        backgroundColor = theme.palette.grey[700]
+        backgroundColor = theme.palette.grey[500]
         color = theme.palette.getContrastText(theme.palette.grey[700])
     }
 
