@@ -1,25 +1,28 @@
 import WordleGame from '@/components/Wordle/WordleGame'
-import { Box, Container, Typography } from '@mui/material'
-import React from 'react'
+import { Box, Container, Stack, Typography } from '@mui/material'
+import Image from 'next/image'
 
 const Wordle = () => {
     return (
         <>
             <Container maxWidth="sm">
-                <Box sx={{ my: 4, textAlign: "center" }}>
-                    <Typography variant="h3" component="h1"
+                <Box sx={{ my: 3, textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                    <Box
                         sx={{
                             fontSize: 44,
                             fontWeight: 800,
-                            marginBottom:4,
-                            color: "gray"
+                            marginBottom: 3,
                         }}
-                        gutterBottom>
-                        Wordle Clone
-                    </Typography>
+                    >
+                        <Stack direction={'row'} sx={{alignItems:'center'}}>
+                            <Image src={'/pngwing.com (1).png'} alt='' height={100} width={100} />
+                            <Typography variant='h3' sx={{ fontSize: 60, fontWeight: 800 }}>Wordle</Typography>
+                        </Stack>
+                    </Box>
                     <WordleGame />
                 </Box>
-            </Container>        </>)
+            </Container>
+        </>)
 }
 
 export default Wordle
