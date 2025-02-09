@@ -45,7 +45,7 @@ const Row = ({ guess, evaluation, theme }: { guess: string; evaluation?: string[
 
 const Tile = ({ value, status, theme }: { value?: string; status?: string; theme: any }) => {
     let backgroundColor = theme.palette.grey[300]
-    let color = theme.palette.text.secondary
+    let color = theme.palette.text.primary
 
     if (status === "correct") {
         backgroundColor = theme.palette.success.main

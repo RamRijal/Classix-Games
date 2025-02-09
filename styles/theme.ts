@@ -18,7 +18,7 @@ export const lightThemeOptions: ThemeOptions = {
       paper: "#f5f5f5",
     },
     text: {
-      disabled: "#f50057",
+      disabled: "#b3b3b3",
       primary: "#000000",
       secondary: "#757575",
     },
