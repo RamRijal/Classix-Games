@@ -1,4 +1,3 @@
-import WordleGame from "@/components/Wordle/WordleGame";
 import { Box, Typography } from "@mui/material";
 
 export default function Home() {
@@ -9,19 +8,26 @@ export default function Home() {
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: "gray",
       flexGrow: 1,
       padding: 3
     }}>
-     
-      <Typography variant="h1" sx={{
+
+      <Typography variant="h1" 
+      sx={{
         fontSize: 44,
         fontWeight: 800,
         marginBottom: '8px',
-        color: "gray"
+        color: "Gray"
       }}>
-        Wordle Clone
+        WELCOME TO CLASSIX GAMES
       </Typography>
-      <WordleGame />
+      <Typography variant="h6" sx={{
+        fontSize: 20,
+        fontWeight: 600,
+        marginBottom: '8px',
+        color: "Lightgrey"
+      }}>
+        Select your choice of game and start playing
+      </Typography>
     </Box>);
 }

@@ -1,36 +1,24 @@
 import { KeyboardProps, KeyProps } from "@/types/wordle"
-import { Box, useTheme } from "@mui/material"
+import { Box, Button, useTheme } from "@mui/material"
 
 export const Keyboard = ({ onChar, onDelete, onEnter, guesses, evaluatedGuesses, isChecking, }: KeyboardProps) => {
-
+    const theme = useTheme()
     const charStatuses = getCharStatuses(guesses, evaluatedGuesses)
 
     return (
-        <Box
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-            }}>
-            {['qwertyuiop', 'asdfghjkl', 'zxcvbnm'].map((row, i) => (
-                <Box key={i} sx={{ display: "flex", justifyContent: "center", mb: 1, width: '100%' }}>
-
-                    {/* KEY FOR EACH ALPHABETS */}
-                    {row.split("").map((key) => (
-                        <Key key={key} value={key} onClick={() => onChar(key)} status={charStatuses[key]} />
-                    ))
-                    }
-                    {/* ENTER BUTTON */}
-                    {i === 1 &&
-                        (
-                            <Key width={67} value="ENTER" onClick={onEnter} isChecking={isChecking} >
-                                {isChecking ? "..." : "ENTER"}
-                            </Key>
-                        )
-                    }
-                    {/* DELETE BUTTON */}
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            {["qwertyuiop", "asdfghjkl", "zxcvbnm"].map((row, i) => (
+                <Box key={i} sx={{ display: "flex", mb: 1 }}>
                     {i === 2 && (
-                        <Key width={65.4} value="DELETE" onClick={onDelete} >
+                        <Key width={65.4} value="ENTER" onClick={onEnter} isChecking={isChecking} theme={theme}>
+                            {isChecking ? "..." : "ENTER"}
+                        </Key>
+                    )}
+                    {row.split("").map((key) => (
+                        <Key key={key} value={key} onClick={() => onChar(key)} status={charStatuses[key]} theme={theme} />
+                    ))}
+                    {i === 2 && (
+                        <Key width={65.4} value="DELETE" onClick={onDelete} theme={theme}>
                             DELETE
                         </Key>
                     )}
@@ -44,29 +32,39 @@ export const Keyboard = ({ onChar, onDelete, onEnter, guesses, evaluatedGuesses,
 const Key = ({ value, onClick, width = 60, status, children, isChecking = false, }: KeyProps) => {
     const theme = useTheme()
 
-    let backgroundColor = "bg-neutral-300"
-    let textColor = theme.palette.background.paper
+    let backgroundColor = theme.palette.grey[300]
+    let color = theme.palette.text.primary
 
     if (status === "correct") {
-        backgroundColor = "bg-green-500"
-        textColor = "text-white"
+        backgroundColor = theme.palette.success.main
+        color = theme.palette.success.contrastText
     } else if (status === "present") {
-        backgroundColor = "bg-yellow-500"
-        textColor = "text-white"
+        backgroundColor = theme.palette.warning.main
+        color = theme.palette.warning.contrastText
     } else if (status === "absent") {
-        backgroundColor = "bg-neutral-400"
-        textColor = "text-white"
+        backgroundColor = theme.palette.grey[700]
+        color = theme.palette.getContrastText(theme.palette.grey[700])
     }
 
     return (
-        <button
-            className={`${backgroundColor} ${textColor} font-bold rounded mx-0.5 text-sm`}
-            style={{ width: `${width}px`, height: "58px" }}
+        <Button
+            variant="contained"
+            sx={{
+                minWidth: `${width}px`,
+                height: "58px",
+                mX: 0.25,
+                backgroundColor,
+                color,
+                "&:hover": {
+                    backgroundColor,
+                    opacity: 0.8,
+                },
+            }}
             onClick={onClick}
             disabled={isChecking}
         >
             {children || value.toUpperCase()}
-        </button>
+        </Button>
     )
 }
 
