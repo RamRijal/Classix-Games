@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { toast } from "react-hot-toast"
 import WordGrid from "@/components/Wordle/WordleGrid"
 import { getRandomWord, isValidWord } from "@/utils/WordsAPI"
@@ -119,6 +119,28 @@ export default function WordleGame() {
 
         return result
     }
+
+    const handleKeyDown = useCallback(
+        (event: KeyboardEvent) => {
+            if (gameOver) return
+
+            if (event.key === "Enter") {
+                onEnter()
+            } else if (event.key === "Backspace") {
+                onDelete()
+            } else if (/^[a-zA-Z]$/.test(event.key)) {
+                onChar(event.key.toLowerCase())
+            }
+        },
+        [gameOver, onEnter, onDelete, onChar],
+    )
+
+    useEffect(() => {
+        window.addEventListener("keydown", handleKeyDown)
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown)
+        }
+    }, [handleKeyDown])
 
     return (
         <Box sx={{display:"flex",flexDirection:"column",gap:2,alignItems:'center'}}>
