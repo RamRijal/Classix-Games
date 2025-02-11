@@ -7,15 +7,16 @@ import { useState } from 'react';
 import { SidebarItem, SidebarProps } from '../types/Sidebar';
 
 export const defaultItems: SidebarItem[] = [
-    { id: 1, path: "/Quiz", text: 'Quiz', icon: <Dashboard /> },
+    { id: 1, path: "/", text: 'Dashboard', icon: <Dashboard /> },
     { id: 2, path: "/Wordle", text: 'Wordle', icon: <People /> },
     { id: 3, path: "/TicTacToe", text: 'TicTacToe', icon: <ShoppingCart /> },
     { id: 4, path: "/Memorize", text: 'Memorize', icon: <Analytics /> },
-    { id: 5, path: "/Contexto", text: 'Contexto', icon: <BarChart /> },
+    { id: 5, path: "/Quiz", text: 'Quiz', icon: <Dashboard /> },
     { id: 6, path: "/Snake", text: 'Snake', icon: <Bento /> },
     { id: 7, path: "/Flappy Bird", text: 'Flappy Bird', icon: <Flaky /> },
     { id: 8, path: "/Car Race", text: 'Car Race', icon: <ShareLocation /> },
     { id: 9, path: "/2048", text: '2048', icon: <ShoppingBag /> },
+    { id: 10, path: "/Contexto", text: 'Contexto', icon: <BarChart /> },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -64,9 +65,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', paddingY: 6 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2 }}>
                     <Link href={'/'}>
-                    <Typography variant="h6" sx={{ fontWeight: 800, fontSize: 20, display: expanded ? 'block' : 'none' }}>
-                        Classix Games
-                    </Typography>
+                        <Typography variant="h6" sx={{ fontWeight: 800, fontSize: 20, display: expanded ? 'block' : 'none' }}>
+                            Classix Games
+                        </Typography>
                     </Link>
                     <IconButton
                         onClick={handleExpansion}

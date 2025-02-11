@@ -1,6 +1,6 @@
 'use client'
 import { QuizData } from '@/data/QuizData';
-import { Box, Button, Card, CardContent, Container, Paper, Stack, Typography, useTheme } from '@mui/material';
+import { Box, Button, Container, Paper, Stack, Typography, useTheme } from '@mui/material';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
@@ -170,11 +170,11 @@ const QuizGame = () => {
                 <Typography variant="h5" sx={{ color: theme.palette.text.primary, justifyContent: 'left', alignItems: 'center' }}>
                   {QuizData[categoryIndex].category}
                 </Typography>
-                <Typography variant="h4" sx={{ color: theme.palette.text.disabled }}>
+                <Typography variant="h4" sx={{ color: theme.palette.background.default }}>
                   Question {questionIndex + 1}
                 </Typography>
 
-                <Typography variant='h6' sx={{ color: theme.palette.common.white }}>Time left: {timer} sec</Typography>
+                <Typography variant='h6' sx={{ color: theme.palette.text.primary }}>Time left: {timer} sec</Typography>
               </Stack>
               <Box
                 sx={{
@@ -199,10 +199,10 @@ const QuizGame = () => {
                       variant="contained"
                       sx={{
                         width: "200px",
-                        bgcolor: theme.palette.background.paper,
-                        color: theme.palette.text.secondary,
+                        bgcolor: theme.palette.warning.light,
+                        color: theme.palette.text.primary,
                         fontSize: 16,
-                        fontWeight: 600
+                        fontWeight: 400
                       }}
                       onClick={() => handleAnswer(option)}
                       disabled={!!selectedOption}
