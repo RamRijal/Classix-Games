@@ -1,3 +1,4 @@
+import FlappyBirdGame from '@/components/FlappyBird/FlappyBirdGame'
 import React from 'react'
 
 const FlappyBird = () => {
