@@ -14,9 +14,9 @@ const HomePage = () => {
                     xs: "repeat(2, 1fr)",
                     sm: "repeat(3, 1fr)",
                 },
-                gap: 2,
+                gap: 4,
                 width: "100%",
-                maxWidth: "800px",
+                maxWidth: "900px",
                 margin: "auto",
                 marginY: 4,
             }}
@@ -27,7 +27,7 @@ const HomePage = () => {
                     sx={{
                         width: "100%",
                         minHeight: "380px",
-                        bgcolor: "grey",
+                        bgcolor: theme.palette.grey[500],
                         p: 2,
                         borderRadius: 2,
                         transition: "transform 0.2s, box-shadow 0.2s",
@@ -40,7 +40,7 @@ const HomePage = () => {
                     <Link href={card.link} passHref>
                         <Box
                             sx={{
-                                minHeight: 230,
+                                minHeight: 200,
                                 aspectRatio: "1/1",
                                 bgcolor: theme.palette.background.default,
                                 position: "relative",
@@ -56,7 +56,7 @@ const HomePage = () => {
                                 priority={card.id <= 3} // Prioritize loading for the first 3 images
                             />
                         </Box>
-                        <Stack direction={"column"} sx={{ marginTop: 2 }}>
+                        <Stack direction={"column"} sx={{ marginTop: 1 }}>
                             <Typography
                                 variant="h4"
                                 sx={{ fontWeight: 700, color: theme.palette.common.white, marginY: 0.5 }}
