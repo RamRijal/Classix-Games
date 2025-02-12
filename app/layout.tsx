@@ -4,8 +4,11 @@ import { lightTheme, darkTheme } from "@/styles/theme";
 import { Box, CssBaseline, ThemeProvider } from "@mui/material";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
+import LoadingBar from "react-top-loading-bar";
+import { usePathname } from "next/navigation";
+import Loader from "@/UI/Loader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,6 +32,19 @@ export default function RootLayout({
 }>) {
   const [isdarkMode, setIsdarkMode] = useState(false)
   const [isExpanded, setIsExpanded] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setProgress(30);
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setProgress(100);
+      setLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [pathname]);
 
   const toggleTheme = () => {
     setIsdarkMode(!isdarkMode);
@@ -40,6 +56,11 @@ export default function RootLayout({
       >
         <ThemeProvider theme={isdarkMode ? darkTheme : lightTheme}>
           <CssBaseline />
+          <LoadingBar
+            color='green'
+            progress={progress}
+            onLoaderFinished={() => setProgress(0)}
+          />
           <Box sx={{
             display: 'flex',
             zIndex: 50,
@@ -53,10 +74,10 @@ export default function RootLayout({
               expanded={isExpanded}
               onToggle={setIsExpanded}
             />
-
-            {children}
+            <Box sx={{ flexGrow: 1 }}>
+              {loading ? <Loader /> : children}
+            </Box>
             <Toaster />
-
           </Box>
         </ThemeProvider>
       </body>
