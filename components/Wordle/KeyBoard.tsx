@@ -2,7 +2,6 @@ import { KeyboardProps, KeyProps } from "@/types/wordle"
 import { Box, Button, useTheme } from "@mui/material"
 
 export const Keyboard = ({ onChar, onDelete, onEnter, guesses, evaluatedGuesses, isChecking, }: KeyboardProps) => {
-    const theme = useTheme()
     const charStatuses = getCharStatuses(guesses, evaluatedGuesses)
 
     return (
@@ -10,15 +9,15 @@ export const Keyboard = ({ onChar, onDelete, onEnter, guesses, evaluatedGuesses,
             {["qwertyuiop", "asdfghjkl", "zxcvbnm"].map((row, i) => (
                 <Box key={i} sx={{ display: "flex", mb: 1 }}>
                     {i === 2 && (
-                        <Key width={65.4} value="ENTER" onClick={onEnter} isChecking={isChecking} theme={theme}>
+                        <Key width={65.4} value="ENTER" onClick={onEnter} isChecking={isChecking}>
                             {isChecking ? "..." : "ENTER"}
                         </Key>
                     )}
                     {row.split("").map((key) => (
-                        <Key key={key} value={key} onClick={() => onChar(key)} status={charStatuses[key]} theme={theme} />
+                        <Key key={key} value={key} onClick={() => onChar(key)} status={charStatuses[key]} />
                     ))}
                     {i === 2 && (
-                        <Key width={65.4} value="DELETE" onClick={onDelete} theme={theme}>
+                        <Key width={65.4} value="DELETE" onClick={onDelete}>
                             DELETE
                         </Key>
                     )}
@@ -27,9 +26,9 @@ export const Keyboard = ({ onChar, onDelete, onEnter, guesses, evaluatedGuesses,
         </Box>
     )
 }
+
 // CUSTOM KEY COMPONENT FOR ALPHABETS
-// CUSTOM CHARACTER/ALPHABET STATUS COMPONENT FOR ALPHABETS
-const Key = ({ value, onClick, width = 60, status, children, isChecking = false, }: KeyProps) => {
+const Key = ({ value, onClick, width = 60, status, children, isChecking = false }: KeyProps) => {
     const theme = useTheme()
 
     let backgroundColor = theme.palette.grey[300]
@@ -89,4 +88,3 @@ const getCharStatuses = (guesses: string[], evaluatedGuesses: string[][]) => {
 
     return charObj
 }
-
