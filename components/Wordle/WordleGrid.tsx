@@ -9,8 +9,17 @@ interface WordGridProps {
     evaluatedGuesses: string[][]
 }
 
+interface RowProps {
+    guess: string
+    evaluation?: string[]
+}
+
+interface TileProps {
+    value?: string
+    status?: string
+}
+
 export default function WordGrid({ guesses, currentGuess, evaluatedGuesses }: WordGridProps) {
-    const theme = useTheme()
     const allGuesses = [...guesses, currentGuess]
     const emptyRows = MAX_GUESSES - allGuesses.length
 
@@ -21,29 +30,30 @@ export default function WordGrid({ guesses, currentGuess, evaluatedGuesses }: Wo
                     key={i}
                     guess={guess}
                     evaluation={i < evaluatedGuesses.length ? evaluatedGuesses[i] : undefined}
-                    theme={theme}
                 />
             ))}
             {Array.from({ length: emptyRows }).map((_, i) => (
-                <Row key={`empty-${i}`} guess="" theme={theme} />
+                <Row key={`empty-${i}`} guess="" />
             ))}
         </Box>
     )
 }
 
-const Row = ({ guess, evaluation, theme }: { guess: string; evaluation?: string[]; theme: any }) => {
+const Row = ({ guess, evaluation }: RowProps) => {
     const tiles = Array.from({ length: WORD_LENGTH })
 
     return (
         <Box sx={{ display: "grid", gridTemplateColumns: `repeat(${WORD_LENGTH}, 1fr)`, gap: 1 }}>
             {tiles.map((_, i) => (
-                <Tile key={i} value={guess[i]} status={evaluation ? evaluation[i] : undefined} theme={theme} />
+                <Tile key={i} value={guess[i]} status={evaluation ? evaluation[i] : undefined} />
             ))}
         </Box>
     )
 }
 
-const Tile = ({ value, status, theme }: { value?: string; status?: string; theme: any }) => {
+const Tile = ({ value, status }: TileProps) => {
+    const theme = useTheme()
+
     let backgroundColor = theme.palette.grey[300]
     let color = theme.palette.text.primary
 
@@ -77,4 +87,3 @@ const Tile = ({ value, status, theme }: { value?: string; status?: string; theme
         </Paper>
     )
 }
-

@@ -7,18 +7,22 @@ import { useEffect, useState } from 'react';
 import MemorizeCard from './MemorizeCard';
 
 const createBoard = (): MemoryCardType[] => {
-    const shuffledObjects = [...MemoryItem, ...MemoryItem].sort(() => Math.random() - 0.5)
+    const shuffledObjects = [...MemoryItem, ...MemoryItem].sort(() => Math.random() - 0.5);
     return shuffledObjects.slice(0, 36).map((object, index) => ({
         id: index,
         object,
         isFlipped: false,
         isMatched: false,
-    }))
-}
+    }));
+};
 
 const MemorizeGame = () => {
-    const [startedMemory, setStartedMemory] = useState(false);
-    const [moves, setMoves] = useState(0);
+    const [startedMemory, setStartedMemory] = useState<boolean>(false);
+    const [moves, setMoves] = useState<number>(0);
+    const [cards, setCards] = useState<MemoryCardType[]>(createBoard());
+    const [flippedCards, setFlippedCards] = useState<number[]>([]);
+    const [matchedPairs, setMatchedPairs] = useState<number>(0);
+    const [isChecking, setIsChecking] = useState<boolean>(false);
 
     const theme = useTheme();
 
@@ -26,79 +30,72 @@ const MemorizeGame = () => {
         setStartedMemory(true);
     };
 
-    // Game Logic
-    const [cards, setCards] = useState<MemoryCardType[]>(createBoard());
-    const [flippedCards, setFlippedCards] = useState<number[]>([]);
-    const [matchedPairs, setMatchedPairs] = useState<number>(0);
-    const [isChecking, setIsChecking] = useState(false);
-
-
     useEffect(() => {
         if (flippedCards.length === 2) {
             setIsChecking(true);
             const [firstCard, secondCard] = flippedCards;
 
             if (cards[firstCard].object === cards[secondCard].object) {
-                setCards((prevCards) => prevCards.map((card) =>
-                    card.id === firstCard || card.id === secondCard ?
-                        { ...card, isMatched: true } :
-                        card,
-                ),
+                setCards((prevCards) =>
+                    prevCards.map((card) =>
+                        card.id === firstCard || card.id === secondCard ? { ...card, isMatched: true } : card
+                    )
                 );
                 setMatchedPairs((prev) => prev + 1);
                 setFlippedCards([]);
-                setIsChecking(false)
+                setIsChecking(false);
             } else {
                 setTimeout(() => {
                     setCards((prevCards) =>
                         prevCards.map((card) =>
-                            card.id === firstCard || card.id === secondCard ? { ...card, isFlipped: false } : card,
-                        ),
+                            card.id === firstCard || card.id === secondCard ? { ...card, isFlipped: false } : card
+                        )
                     );
                     setFlippedCards([]);
                     setIsChecking(false);
-                }, 1000); // Reduced from 6000ms to 1000ms for better UX
+                }, 1000);
             }
         }
     }, [flippedCards, cards]);
 
     const handleCardClick = (id: number) => {
-        if (!isChecking && flippedCards.length < 2 && !cards[id].isFlipped && !cards[id].isMatched) {
-            setCards((prevCards) =>
-                prevCards.map((card) => (card.id === id ? { ...card, isFlipped: true } : card))
-            );
-            setFlippedCards((prev) => [...prev, id]);
+        if (isChecking || flippedCards.length >= 2 || cards[id].isFlipped || cards[id].isMatched) {
+            return;
         }
+        setCards((prevCards) =>
+            prevCards.map((card) => (card.id === id ? { ...card, isFlipped: true } : card))
+        );
+        setFlippedCards((prev) => [...prev, id]);
+        setMoves((prev) => prev + 1);
     };
 
     const resetGame = () => {
         setCards(createBoard());
         setFlippedCards([]);
         setMatchedPairs(0);
+        setMoves(0);
     };
 
     return (
-        <Container maxWidth="md" sx={{ py: 4, alignContent: 'center' }}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        <Container maxWidth="md" sx={{ py: 2,mt:1, alignContent: 'center' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <Paper
                     elevation={2}
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',
-                        justifyContent: "center",
-                        alignItems: "center",
+                        justifyContent: 'center',
+                        alignItems: 'center',
                         p: 3,
                         gap: 2,
                         borderRadius: 2,
-                        backgroundColor: theme.palette.background.default
+                        backgroundColor: theme.palette.background.default,
                     }}
                 >
                     {startedMemory ? (
                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, width: '60%' }}>
-                            <Typography variant="h4" gutterBottom>
-                                Memory Card Game
-                            </Typography>
-                            <Stack direction="row" spacing={4} sx={{ mb: 2 }}>
+                            
+                            <Stack direction="row" spacing={4} sx={{ mb: 1 }}>
                                 <Typography variant="h6">
                                     Pairs: {matchedPairs} / 18
                                 </Typography>
@@ -111,7 +108,7 @@ const MemorizeGame = () => {
                                     display: 'grid',
                                     gridTemplateColumns: {
                                         xs: 'repeat(4, 1fr)',
-                                        sm: 'repeat(6, 1fr)'
+                                        sm: 'repeat(6, 1fr)',
                                     },
                                     gap: 1,
                                     width: '100%',
@@ -128,11 +125,10 @@ const MemorizeGame = () => {
                                     </Box>
                                 ))}
                             </Box>
-
                             <Button
                                 variant="contained"
                                 onClick={resetGame}
-                                sx={{ marginTop: 2 ,bgcolor:theme.palette.success.dark}}
+                                sx={{ marginTop: 2, bgcolor: theme.palette.success.dark }}
                             >
                                 Reset Game
                             </Button>
@@ -140,11 +136,11 @@ const MemorizeGame = () => {
                     ) : (
                         <>
                             <Typography
-                                variant='h2'
+                                variant="h2"
                                 sx={{
                                     color: theme.palette.text.primary,
                                     fontWeight: 700,
-                                    fontSize: { xs: 40, sm: 60 }
+                                    fontSize: { xs: 40, sm: 60 },
                                 }}
                             >
                                 Memorize
@@ -154,7 +150,7 @@ const MemorizeGame = () => {
                                     src={'/pngegg (1).png'}
                                     height={220}
                                     width={220}
-                                    alt='Memory Game Icon'
+                                    alt="Memory Game Icon"
                                     priority
                                 />
                             </Box>
@@ -164,11 +160,11 @@ const MemorizeGame = () => {
                                     bgcolor: theme.palette.success.dark,
                                     color: theme.palette.common.white,
                                     p: 2,
-                                    boxShadow: "inherit",
+                                    boxShadow: 'inherit',
                                     maxWidth: '250px',
                                     '&:hover': {
                                         bgcolor: theme.palette.success.main,
-                                    }
+                                    },
                                 }}
                             >
                                 Press Play to Start
@@ -180,11 +176,11 @@ const MemorizeGame = () => {
                                     width: '100%',
                                     padding: 2,
                                     justifyContent: 'space-between',
-                                    textAlign: 'center'
+                                    textAlign: 'center',
                                 }}
                             >
-                                <Typography variant='h5'>How to play:</Typography>
-                                <Typography variant='h5'>Match pairs of cards to win!</Typography>
+                                <Typography variant="h5">How to play:</Typography>
+                                <Typography variant="h5">Match pairs of cards to win!</Typography>
                             </Stack>
                         </>
                     )}

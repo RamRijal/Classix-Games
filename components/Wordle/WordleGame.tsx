@@ -1,15 +1,3 @@
-"use client"
-
-import { useState, useEffect, useCallback } from "react"
-import { toast } from "react-hot-toast"
-import WordGrid from "@/components/Wordle/WordleGrid"
-import { getRandomWord, isValidWord } from "@/utils/WordsAPI"
-import { Keyboard } from "./KeyBoard"
-import { Box, Typography, useTheme } from "@mui/material"
-
-const WORD_LENGTH = 5 //Only 5 letter words accepted
-const MAX_GUESSES = 6 //Only 6 attempts accepted
-
 //Steps:
 //1. Get a random word from the API
 //2. Create a grid with the word=>(WORDLEGRID.tsx)
@@ -20,36 +8,77 @@ const MAX_GUESSES = 6 //Only 6 attempts accepted
 //7. Update the grid and keyboard accordingly
 //8. Check if the game is over
 //9. Display the result
+"use client"
 
+import { useState, useEffect, useCallback } from "react"
+import { toast } from "react-hot-toast"
+import WordGrid from "@/components/Wordle/WordleGrid"
+import { getRandomWord, isValidWord } from "@/utils/WordsAPI"
+import { Keyboard } from "./KeyBoard"
+import { Box, Typography, useTheme } from "@mui/material"
+
+const WORD_LENGTH = 5 // Only 5-letter words accepted
+const MAX_GUESSES = 6 // Only 6 attempts accepted
 
 export default function WordleGame() {
-    const [solution, setSolution] = useState("")//Main Answer
-    const [guesses, setGuesses] = useState<string[]>([])//Each guesses
-    const [currentGuess, setCurrentGuess] = useState("")//Latest Guess
-    const [gameOver, setGameOver] = useState(false) //Boolean to set if games over
+    const [solution, setSolution] = useState<string>("") // Ensure string type
+    const [guesses, setGuesses] = useState<string[]>([])
+    const [currentGuess, setCurrentGuess] = useState<string>("")
+    const [gameOver, setGameOver] = useState<boolean>(false)
     const [evaluatedGuesses, setEvaluatedGuesses] = useState<string[][]>([])
-    const [isChecking, setIsChecking] = useState(false)
+    const [isChecking, setIsChecking] = useState<boolean>(false)
 
-    const theme=useTheme();
+    const theme = useTheme()
 
-    //gets random word for game start
+    // Fetch a random word at game start
     useEffect(() => {
-        setSolution(getRandomWord())
+        const fetchWord = async () => {
+            const word = await getRandomWord()
+            setSolution(word || "")
+        }
+        fetchWord()
     }, [])
 
-    //in case user doesnt input 5 guesses yet and games not over sets currentguess as input
-    const onChar = (value: string) => {
+    const onChar = useCallback((value: string) => {
         if (currentGuess.length < WORD_LENGTH && !gameOver) {
-            setCurrentGuess(`${currentGuess}${value}`)
+            setCurrentGuess((prev) => prev + value)
         }
+    }, [currentGuess, gameOver])
+
+    const onDelete = useCallback(() => {
+        setCurrentGuess((prev) => prev.slice(0, -1))
+    }, [])
+
+    const checkGuess = (guess: string, solution: string): string[] => {
+        const result: string[] = Array(WORD_LENGTH).fill("absent")
+        const solutionArray = solution.toLowerCase().split("")
+        const guessArray = guess.toLowerCase().split("")
+        const solutionCharCount: Record<string, number> = {}
+
+        // First pass: Mark correct letters
+        for (let i = 0; i < WORD_LENGTH; i++) {
+            if (guessArray[i] === solutionArray[i]) {
+                result[i] = "correct"
+                solutionCharCount[solutionArray[i]] = (solutionCharCount[solutionArray[i]] || 0) + 1
+            }
+        }
+
+        // Second pass: Mark present letters
+        for (let i = 0; i < WORD_LENGTH; i++) {
+            if (result[i] !== "correct" && solutionArray.includes(guessArray[i])) {
+                const totalCount = solutionArray.filter((char) => char === guessArray[i]).length
+                const markedCount = solutionCharCount[guessArray[i]] || 0
+                if (markedCount < totalCount) {
+                    result[i] = "present"
+                    solutionCharCount[guessArray[i]] = markedCount + 1
+                }
+            }
+        }
+
+        return result
     }
 
-    //cuts the last guess
-    const onDelete = () => {
-        setCurrentGuess(currentGuess.slice(0, -1))
-    }
-
-    const onEnter = async () => {
+    const onEnter = useCallback(async () => {
         if (gameOver || isChecking) return
 
         if (currentGuess.length === WORD_LENGTH) {
@@ -58,16 +87,14 @@ export default function WordleGame() {
             setIsChecking(false)
 
             if (valid) {
-                const newGuesses = [...guesses, currentGuess]
-                setGuesses(newGuesses)
-                const newEvaluatedGuesses = [...evaluatedGuesses, checkGuess(currentGuess, solution)]
-                setEvaluatedGuesses(newEvaluatedGuesses)
+                setGuesses((prev) => [...prev, currentGuess])
+                setEvaluatedGuesses((prev) => [...prev, checkGuess(currentGuess, solution)])
                 setCurrentGuess("")
 
                 if (currentGuess.toLowerCase() === solution.toLowerCase()) {
                     setGameOver(true)
                     toast.success("Congratulations! You've guessed the word!")
-                } else if (newGuesses.length === MAX_GUESSES) {
+                } else if (guesses.length + 1 === MAX_GUESSES) {
                     setGameOver(true)
                     toast.error(`Game over! The word was: ${solution}`)
                 }
@@ -77,47 +104,14 @@ export default function WordleGame() {
         } else {
             toast.error("Word must be 5 letters long")
         }
-    }
+    }, [currentGuess, gameOver, guesses, isChecking, solution])
 
     const resetGame = () => {
-        setSolution(getRandomWord())
+        setSolution(getRandomWord() || "")
         setGuesses([])
         setEvaluatedGuesses([])
         setCurrentGuess("")
         setGameOver(false)
-    }
-
-    const checkGuess = (guess: string, solution: string): string[] => {
-        const result: string[] = Array(WORD_LENGTH).fill("absent")
-        const solutionArray = solution.toLowerCase().split("")
-        const guessArray = guess.toLowerCase().split("")
-        const solutionCharCount: { [key: string]: number } = {}
-
-        // First pass: Mark correct letters
-        for (let i = 0; i < WORD_LENGTH; i++) {
-            const solutionChar = solutionArray[i]
-            const guessChar = guessArray[i]
-
-            if (guessChar === solutionChar) {
-                result[i] = "correct"
-                solutionCharCount[solutionChar] = (solutionCharCount[solutionChar] || 0) + 1
-            }
-        }
-
-        // Second pass: Mark present letters
-        for (let i = 0; i < WORD_LENGTH; i++) {
-            const guessChar = guessArray[i]
-            if (result[i] !== "correct" && solutionArray.includes(guessChar)) {
-                const totalCount = solutionArray.filter((char) => char === guessChar).length
-                const markedCount = solutionCharCount[guessChar] || 0
-                if (markedCount < totalCount) {
-                    result[i] = "present"
-                    solutionCharCount[guessChar] = markedCount + 1
-                }
-            }
-        }
-
-        return result
     }
 
     const handleKeyDown = useCallback(
@@ -132,7 +126,7 @@ export default function WordleGame() {
                 onChar(event.key.toLowerCase())
             }
         },
-        [gameOver, onEnter, onDelete, onChar],
+        [gameOver, onEnter, onDelete, onChar]
     )
 
     useEffect(() => {
@@ -143,12 +137,13 @@ export default function WordleGame() {
     }, [handleKeyDown])
 
     return (
-        <Box sx={{display:"flex",flexDirection:"column",gap:2,alignItems:'center'}}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "center" }}>
             <WordGrid
                 guesses={guesses}
                 currentGuess={currentGuess}
                 solution={solution}
-                evaluatedGuesses={evaluatedGuesses} />
+                evaluatedGuesses={evaluatedGuesses}
+            />
             <Keyboard
                 onChar={onChar}
                 onDelete={onDelete}
@@ -159,8 +154,8 @@ export default function WordleGame() {
                 isChecking={isChecking}
             />
             {gameOver && (
-                <Box sx={{mt:2}}>
-                    <Typography variant="h3" sx={{mb:1,color:theme.palette.text.primary}} className="text-neutral-800 mb-2">
+                <Box sx={{ mt: 2 }}>
+                    <Typography variant="h3" sx={{ mb: 1, color: theme.palette.text.primary }}>
                         {currentGuess.toLowerCase() === solution.toLowerCase() ? "You won!" : `The word was: ${solution}`}
                     </Typography>
                     <button
@@ -174,4 +169,3 @@ export default function WordleGame() {
         </Box>
     )
 }
-
